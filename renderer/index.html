@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; worker-src 'self' blob:; connect-src 'self' data: blob:">
+  <title>PDF Maker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="toolbar">
+    <div class="brand"><span class="logo">PDF</span> Maker</div>
+    <button id="btnAdd" class="accent-outline" title="Add files (Ctrl+O)">＋ Add files</button>
+    <div class="sep"></div>
+    <button id="btnRotL" data-needs-sel title="Rotate left (Shift+R)">⟲ Left</button>
+    <button id="btnRotR" data-needs-sel title="Rotate right (R)">⟳ Right</button>
+    <button id="btnEdit" data-needs-pages title="Add text / white-out (Enter or double-click a page)">✎ Edit page</button>
+    <button id="btnDup" data-needs-sel title="Duplicate (Ctrl+D)">⧉ Duplicate</button>
+    <button id="btnDel" data-needs-sel title="Delete (Del)">🗑 Delete</button>
+    <div class="sep"></div>
+    <button id="btnUndo" title="Undo (Ctrl+Z)">↶ Undo</button>
+    <button id="btnClear" data-needs-pages title="Remove all pages">Clear all</button>
+    <div class="spacer"></div>
+    <button id="btnExtract" data-needs-sel title="Save only the selected pages as a new PDF">Save selected…</button>
+    <button id="btnSplit" data-needs-pages title="Save every page (or each selected page) as its own PDF">Split…</button>
+    <button id="btnSave" data-needs-pages class="accent" title="Save all pages as one PDF (Ctrl+S)">Save PDF</button>
+  </header>
+
+  <main id="main">
+    <div id="empty" class="empty">
+      <div class="drop-card" id="emptyDrop">
+        <div class="big-icon">📄</div>
+        <h1>Drop files here</h1>
+        <p>PDFs, images (JPG, PNG, WebP…), Word (.docx), text, Markdown, HTML and CSV.</p>
+        <p class="muted">They become pages you can reorder, rotate, edit and save as one PDF.</p>
+        <button id="btnAdd2" class="accent">Choose files…</button>
+      </div>
+    </div>
+    <div id="grid" class="grid"></div>
+  </main>
+
+  <footer class="statusbar">
+    <span id="status">Ready</span>
+    <span id="count"></span>
+  </footer>
+
+  <div id="dropOverlay" class="drop-overlay hidden"><div>Drop to add pages</div></div>
+
+  <div id="editor" class="modal hidden">
+    <div class="editor-bar">
+      <div class="seg" id="toolSeg">
+        <button data-tool="edit" class="active" title="Click existing text to change it (E)">✎ Edit text</button>
+        <button data-tool="text" title="Click on the page to add new text (T)">T Add text</button>
+        <button data-tool="select" title="Select and move items (V)">↖ Move</button>
+        <button data-tool="box" title="Drag to cover content with white (W)">▭ White-out</button>
+      </div>
+      <input id="edText" type="text" placeholder="Selected text…" spellcheck="true">
+      <select id="edFont" title="Font">
+        <option value="sans">Sans</option>
+        <option value="serif">Serif</option>
+        <option value="mono">Mono</option>
+      </select>
+      <div class="seg">
+        <button id="edBold" title="Bold"><b>B</b></button>
+        <button id="edItalic" title="Italic"><i>I</i></button>
+      </div>
+      <label class="field">Size <input id="edSize" type="number" min="4" max="200" step="0.5" value="14"></label>
+      <input id="edColor" type="color" value="#000000" title="Text colour">
+      <button id="edDelete" title="Delete selected item (Del)">🗑</button>
+      <div class="spacer"></div>
+      <div class="seg">
+        <button id="edZoomOut" title="Zoom out (Ctrl −)">−</button>
+        <button id="edZoomFit" title="Fit page to window (Ctrl 0)"><span id="edZoom">100%</span></button>
+        <button id="edZoomIn" title="Zoom in (Ctrl +)">+</button>
+      </div>
+      <button id="edPrev" title="Previous page (PgUp)">◀</button>
+      <span id="edPageNo" class="pageno"></span>
+      <button id="edNext" title="Next page (PgDn)">▶</button>
+      <button id="edDone" class="accent">Done</button>
+    </div>
+    <div class="editor-stage" id="edStage">
+      <div class="page-wrap" id="edWrap">
+        <canvas id="edBase"></canvas>
+        <canvas id="edOverlay"></canvas>
+      </div>
+    </div>
+    <div class="editor-hint" id="edHint"></div>
+  </div>
+
+  <div id="busy" class="busy hidden"><div class="spinner"></div><div id="busyText">Working…</div></div>
+
+  <script src="../node_modules/pdf-lib/dist/pdf-lib.min.js"></script>
+  <script src="../node_modules/pdfjs-dist/build/pdf.min.js"></script>
+  <script src="textremove.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
